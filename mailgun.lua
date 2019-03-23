@@ -1,9 +1,10 @@
 local M = {}
 
--- Project: Mailgun 0.1
+-- Project: Mailgun 0.11
 -- Description: Send email with mailgun.com API
 -- --
 -- Date: Mar 22, 2019
+-- Updated: Mar 23, 2019
 -- Author: Viacheslav Bogomazov
 
 --[[
@@ -17,15 +18,39 @@ mailgun.send({
 })
 --]]
 
-local debug = true
-local sandboxID = "sandboxXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" -- your sanbox id
+local debug = false
+local sandboxID
+local apiKey
 
-local defaultFrom = "crab@test.com" -- default user email if missing
-local defaultTo = "yourmail@test.com" -- recepient email (only confirmed emails are working in sandbox)
-local defaultSubject = "Hello, World!" -- email subject
-local defaultText = "This is a test email from Mailgun." -- email body
-local defaultCallback = function() -- default confirmation callback
-  native.showAlert("Mailgun", "Your message has been sent successfully.", {"Thanks"})
+local defaultFrom
+local defaultTo
+local defaultSubject
+local defaultText
+local defaultCallback
+
+function M.init(params)
+  local params = params or {}
+
+  -- sandbox id and api key from mailgun console
+  sandboxID = params.sandboxID or "sandboxXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  apiKey = params.apiKey or "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXX-XXXXXXXX"
+
+  -- default user email if missing
+  defaultFrom = params.defaultFrom or "crab@test.com" 
+  -- recepient email (only confirmed emails are working in sandbox)
+  defaultTo = params.defaultTo or "yourmail@test.com" 
+  -- email subject
+  defaultSubject = params.defaultSubject or "Hello, World!" 
+  -- email body
+  defaultText = params.defaultText or "This is a test email from Mailgun." 
+  -- debug mode
+  debug = params.debug
+
+  -- default confirmation callback
+  defaultCallback = params.defaultCallback or function() 
+    native.showAlert("Mailgun", "Your message has been sent successfully.", {"Thanks"})
+  end
+  
 end
 
 function M.send(data)
@@ -37,7 +62,7 @@ function M.send(data)
   local text = data.text or defaultText
   local callback = data.callback or defaultCallback
 
-  local url = "https://api.mailgun.net/v3/"..sandboxID..".mailgun.org/messages"
+  local url = "https://api:"..apiKey.."@api.mailgun.net/v3/"..sandboxID..".mailgun.org/messages"
 
   local params = {}
   local headers = {}

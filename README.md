@@ -5,6 +5,20 @@ Example request:
 
 ```
 local mailgun = require("mailgun")
+
+--init with your sandbox data
+mailgun.init({
+	sandboxID = "sandboxXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", --required
+	apiKey = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXX-XXXXXXXX", --required
+	defaultTo = "default@test.com", --optional
+	defaultFrom = "sender@test.com", --optional
+	defaultSubject = "subject", --optional
+	defaultText = "Lorem ipsum", --optional
+	defaultCallback = function() print("Message sent!") end, --optional
+	debug = true --optional
+})
+
+--send email
 mailgun.send({
   from = "hansolo@rebelalliance.com",
   to = "luke@jedi.com",
