@@ -8,17 +8,6 @@ local socket_url = require("socket.url")
 -- Updated: Mar 23, 2019
 -- Author: Viacheslav Bogomazov
 
---[[
--- example
-local mailgun = require("mailgun")
-mailgun.send({
-  from = "hansolo@rebelalliance.com",
-  to = "luke@jedi.com",
-  subject = "Get over it",
-  text = "I was first not Greedo."
-})
---]]
-
 M.isInitialized = false
 local debug = false
 local sandboxID
