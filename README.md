@@ -36,7 +36,7 @@ mailgun.send({
   subject = "Get over it",
   text = "I was first not Greedo.",
   attachments = {
-	-- default value for baseDir is system.ResourceDirectory
+	-- default value for baseDir is system.DocumentsDirectory
     {baseDir = system.DocumentsDirectory, filename = "awesome image.png"},
     {baseDir = system.DocumentsDirectory, filename = "few notes.txt"}
   }

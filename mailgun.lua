@@ -1,11 +1,11 @@
 local M = {}
 local socket_url = require("socket.url")
 
--- Project: Mailgun 0.11
+-- Project: Mailgun 0.12
 -- Description: Send email with mailgun.com API
 -- --
 -- Date: Mar 22, 2019
--- Updated: Mar 23, 2019
+-- Updated: Apr 6, 2019
 -- Author: Viacheslav Bogomazov
 
 M.isInitialized = false
@@ -59,7 +59,7 @@ end
 
 function M.send(data)
   if (not M.isInitialized) then
-    print("warning: mailgun should need to be configured before usage")
+    print("warning: mailgun needs to be configured before being used")
     return
   end
   native.setActivityIndicator( true )
@@ -87,13 +87,18 @@ function M.send(data)
 
     for i = 1, #data.attachments do
       local attachment = data.attachments[i]
-      local path = system.pathForFile(attachment.filename, attachment.baseDir)
+      local baseDir = attachment.baseDir or system.DocumentsDirectory
+      local path = system.pathForFile(attachment.filename, baseDir)
       if (path == nil) then
-        print("warning: no path found for attachment: ", attachment.filename)
+        local warningMessage = "warning: attachment path not found: "
+        print(warningMessage, attachment.filename)
+        toEncode.text = toEncode.text.."\n\n"..warningMessage..tostring(attachment.filename)
       else
         local file = io.open( path , "rb" )
         if (file == nil) then
-          print("warning: attachment file not found:", attachment.filename)
+          local warningMessage = "warning: attachment file not found: "
+          print(warningMessage, attachment.filename)
+          toEncode.text = toEncode.text.."\n\n"..warningMessage..tostring(attachment.filename)
         else
           local content = file:read("*a")
           file:close()
@@ -112,10 +117,13 @@ function M.send(data)
   end
 
   if (body == nil) then
-    body = "from=" .. from
-      "&to=" .. to
-      "&subject=" .. socket_url.escape(subject)
-      "&text=" .. socket_url.escape(text)
+    body = {
+      "from="..tostring(from),
+      "to="..tostring(to),
+      "subject="..socket_url.escape(subject),
+      "text="..socket_url.escape(text),
+    }
+    body = table.concat(body, "&")
   end
 
   params.headers = headers
